@@ -10,7 +10,7 @@ const config = {
     },
     production: {
       applicationId: '${env:APPLICATION_ID}',
-      url: 'https://your_app_hostname.com',
+      url: 'https://mc-pixelphraser.vercel.app',
     },
   },
   oAuthScopes: {
