@@ -6,11 +6,11 @@ const config = {
   cloudIdentifier: 'gcp-eu',
   env: {
     development: {
-      initialProjectKey: 'PROJECT_ID',
+      initialProjectKey: "${env:PROJECT_ID}",
     },
     production: {
-      applicationId: 'APPLICATION_ID',
-      url: 'https://mcapp-pixelphraser.vercel.app',
+      applicationId: "${env:APPLICATION_ID}",
+      url: 'https://your_host-name.com',
     },
   },
   oAuthScopes: {
