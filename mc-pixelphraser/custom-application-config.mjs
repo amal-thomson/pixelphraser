@@ -10,7 +10,7 @@ const config = {
     },
     production: {
       applicationId: "${env:APPLICATION_ID}",
-      url: "https://youe_host_name.com",
+      url: "https://pixelphraser.vercel.app",
     },
   },
   oAuthScopes: {
