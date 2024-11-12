@@ -10,7 +10,7 @@ const config = {
     },
     production: {
       applicationId: "${env:APPLICATION_ID}",
-      url: 'https://your_host-name.com',
+      url: "https://your_host-name.com",
     },
   },
   oAuthScopes: {
