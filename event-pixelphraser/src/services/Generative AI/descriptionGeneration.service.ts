@@ -15,7 +15,7 @@ export async function generateProductDescription(imageData: ImageData): Promise<
             - Web entities: ${imageData.webEntities}
 
             Description Guidelines:
-            1. The description should be professional, concise, and engaging (150-2000 words).
+            1. The description should be professional, concise, and engaging (150-200 words).
             2. Clearly specify the target category (e.g., men's, women's, kids').
             3. Highlight key features such as style, fit, and comfort relevant to the target category.
             4. Confidently describe the fabric’s feel (e.g., soft, breathable) without using uncertain language like "while not specified."
