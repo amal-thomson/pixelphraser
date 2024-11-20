@@ -9,8 +9,8 @@ const config = {
       initialProjectKey: "${env:PROJECT_ID}"
     },
     production: {
-      applicationId: 'APPLICATION_ID',
-      url: 'https://pixelphraser.vercel.app',
+      applicationId: "${env:APPLICATION_ID}",
+      url: "https://pixelphraser.vercel.app",
     },
   },
   oAuthScopes: {
