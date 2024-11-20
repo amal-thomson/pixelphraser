@@ -24,11 +24,13 @@ export async function generateProductDescription(imageData: ImageData): Promise<
             7. Mention styling options, like pairing with accessories or layering possibilities.
             8. If applicable, include care instructions (e.g., machine washable).
             9. Add sizing or fit information if relevant (e.g., slim fit, true to size).
+            10. Ensure the description is strictly Search Engine Optimised (SEO) by using relevant keywords, phrases, and naturally incorporating terms likely to drive search traffic.
 
             Key Features Section:
             - Include 3-5 key bullet points that summarize the product's main attributes, focusing on fabric, fit, and versatility.
 
             Ensure no text styling (e.g., bold, italics) is applied in either section.`;
+
 
         const result = await model.generateContent(prompt);
         if (!result?.response) throw new Error('❌ Generative AI response is null or undefined.');
