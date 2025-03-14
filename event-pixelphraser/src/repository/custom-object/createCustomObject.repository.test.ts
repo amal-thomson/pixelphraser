@@ -1,5 +1,5 @@
 // tests/repository/Custom Object/createCustomObject.repository.test.ts
-import { createProductCustomObject } from '../Custom Object/createCustomObject.repository';
+import { createProductCustomObject } from '../custom-object/createCustomObject.repository';
 
 // Mock the entire client module
 jest.mock('../../client/create.client', () => ({

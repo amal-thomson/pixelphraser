@@ -1,4 +1,4 @@
-import { updateCustomObjectWithDescription } from '../Custom Object/updateCustomObjectWithDescription';
+import { updateCustomObjectWithDescription } from '../custom-object/updateCustomObjectWithDescription';
 
 // Mock the entire client module
 jest.mock('../../client/create.client', () => ({

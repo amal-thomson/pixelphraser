@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { logger } from '../utils/logger.utils';
-import { productAnalysis } from '../services/Vision AI/productAnalysis.service';
-import { generateProductDescription } from '../services/Generative AI/descriptionGeneration.service';
+import { productAnalysis } from '../services/vision-ai/productAnalysis.service';
+import { generateProductDescription } from '../services/generative-ai/descriptionGeneration.service';
 import { ProductAttribute } from '../interfaces/productAttribute.interface';
-import { createProductCustomObject } from '../repository/Custom Object/createCustomObject.repository';
-import { updateCustomObjectWithDescription } from '../repository/Custom Object/updateCustomObjectWithDescription';
+import { createProductCustomObject } from '../repository/custom-object/createCustomObject.repository';
+import { updateCustomObjectWithDescription } from '../repository/custom-object/updateCustomObjectWithDescription';
 
 export const post = async (request: Request, response: Response) => {
     try {

@@ -1,15 +1,15 @@
 // tests/controllers/event.controller.test.ts
 import { Request, Response } from 'express';
 import { post } from './event.controller';
-import { productAnalysis } from '../services/Vision AI/productAnalysis.service';
-import { generateProductDescription } from '../services/Generative AI/descriptionGeneration.service';
-import { createProductCustomObject } from '../repository/Custom Object/createCustomObject.repository';
-import { updateCustomObjectWithDescription } from '../repository/Custom Object/updateCustomObjectWithDescription';
+import { productAnalysis } from '../services/vision-ai/productAnalysis.service';
+import { generateProductDescription } from '../services/generative-ai/descriptionGeneration.service';
+import { createProductCustomObject } from '../repository/custom-object/createCustomObject.repository';
+import { updateCustomObjectWithDescription } from '../repository/custom-object/updateCustomObjectWithDescription';
 
-jest.mock('../../src/services/Vision AI/productAnalysis.service');
-jest.mock('../../src/services/Generative AI/descriptionGeneration.service');
-jest.mock('../../src/repository/Custom Object/createCustomObject.repository');
-jest.mock('../../src/repository/Custom Object/updateCustomObjectWithDescription');
+jest.mock('../../src/services/vision-ai/productAnalysis.service');
+jest.mock('../../src/services/generative-ai/descriptionGeneration.service');
+jest.mock('../../src/repository/custom-object/createCustomObject.repository');
+jest.mock('../../src/repository/custom-object/updateCustomObjectWithDescription');
 
 // Mock the config utilities to return hard-coded values instead of real environment variables
 jest.mock('../../src/utils/config.utils.ts', () => ({
