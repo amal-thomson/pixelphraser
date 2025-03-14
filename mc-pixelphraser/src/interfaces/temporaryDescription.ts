@@ -3,8 +3,11 @@ export interface TemporaryDescription {
   version: number;
   key: string;
   value: {
-    temporaryDescription: string | null;
+    usDescription?: string | null;
+    gbDescription?: string | null;
+    deDescription?: string | null;
     imageUrl: string;
+    productType: string;
     productName: string;
     generatedAt: string;
   };

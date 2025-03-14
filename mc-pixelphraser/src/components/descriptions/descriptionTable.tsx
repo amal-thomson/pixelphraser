@@ -29,7 +29,9 @@ export const DescriptionsTable = ({
       await updateProductDescription(
         dispatch,
         tempDesc.key,
-        tempDesc.value.temporaryDescription || ''
+        tempDesc.value.usDescription || '',
+        tempDesc.value.gbDescription || '',
+        tempDesc.value.deDescription || ''
       );
       await deleteTemporaryDescription(dispatch, tempDesc.id, tempDesc.version);
       await loadDescriptions();
@@ -65,11 +67,11 @@ export const DescriptionsTable = ({
   const columns = [
     { key: 'imageUrl', label: 'Image', flexGrow: 1 },
     { key: 'productName', label: 'Product Name', flexGrow: 2 },
-    { key: 'description', label: 'Description', flexGrow: 2 },
+    { key: 'descriptions', label: 'Descriptions', flexGrow: 3 },
     { key: 'generatedAt', label: 'Generated At', flexGrow: 1 },
     { key: 'actions', label: 'Actions', flexGrow: 1 }
   ];
-
+  
   const itemRenderer = (item: any, column: any) => {
     switch (column.key) {
       case 'imageUrl':
@@ -88,32 +90,31 @@ export const DescriptionsTable = ({
           />
         );
       case 'productName':
-        return (
-          <div style={{ padding: '0.5rem' }}>
-            <Text.Body>{item.productName}</Text.Body>
-          </div>
-        );
-      case 'description':
+        return <Text.Body>{item.productName}</Text.Body>;
+      case 'descriptions':
         return (
           <div
-            onClick={() => setExpandedDesc(item.description)}
+            onClick={() => setExpandedDesc(
+              `US: ${item.usDescription || 'N/A'}\nGB: ${item.gbDescription || 'N/A'}\nDE: ${item.deDescription || 'N/A'}`
+            )}
             style={{
               maxHeight: '4rem',
               overflowY: 'auto',
               padding: '0.5rem',
               borderRadius: '4px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              whiteSpace: 'pre-wrap'
             }}
           >
-            <Text.Body>{item.description}</Text.Body>
+            <Text.Body>
+              <strong>US:</strong> {item.usDescription || 'N/A'} <br />
+              <strong>GB:</strong> {item.gbDescription || 'N/A'} <br />
+              <strong>DE:</strong> {item.deDescription || 'N/A'}
+            </Text.Body>
           </div>
         );
       case 'generatedAt':
-        return (
-          <div style={{ padding: '0.5rem' }}>
-            <Text.Body tone="secondary">{formatDate(item.generatedAt)}</Text.Body>
-          </div>
-        );
+        return <Text.Body tone="secondary">{formatDate(item.generatedAt)}</Text.Body>;
       case 'actions':
         return (
           <Spacings.Inline scale="s">
@@ -133,7 +134,7 @@ export const DescriptionsTable = ({
         return item[column.key];
     }
   };
-
+  
   return (
     <>
       <DataTable
@@ -141,11 +142,14 @@ export const DescriptionsTable = ({
         rows={data.map(desc => ({
           imageUrl: desc.value.imageUrl,
           productName: desc.value.productName,
-          description: desc.value.temporaryDescription,
+          descriptions: 'descriptions',
+          usDescription: desc.value.usDescription,
+          gbDescription: desc.value.gbDescription,
+          deDescription: desc.value.deDescription,
           generatedAt: desc.value.generatedAt,
           actions: 'actions',
           id: desc.id
-        }))}
+        }))} 
         itemRenderer={itemRenderer}
       />
       {expandedDesc && (
@@ -156,4 +160,5 @@ export const DescriptionsTable = ({
       )}
     </>
   );
+  
 };

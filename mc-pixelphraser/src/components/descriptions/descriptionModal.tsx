@@ -1,39 +1,83 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DescriptionModalProps } from '../../interfaces/descriptionModalProps';
 
-export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description, onClose }) => (
-  <div
-    style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',  // Semi-transparent background for the modal overlay
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000,
-      cursor: 'pointer' // Pointer cursor when hovering over the overlay
-    }}
-    onClick={onClose}  // Close the modal when clicking outside of it
-  >
+export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description, onClose }) => {
+  const [selectedTab, setSelectedTab] = useState<'US' | 'GB' | 'DE'>('US');
+
+  const getDescription = (locale: string) => {
+    const match = description.match(new RegExp(`${locale}: (.*?)(\\n|$)`, 's'));
+    return match ? match[1].trim() : 'No description available';
+  };
+  
+
+  return (
     <div
       style={{
-        backgroundColor: '#fff',  // White background for the modal content
-        padding: '1.5rem',
-        borderRadius: '8px',
-        maxWidth: '600px',
-        maxHeight: '80vh',
-        overflowY: 'auto',
-        cursor: 'default'  // Default cursor inside the modal
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+        cursor: 'pointer'
       }}
-      onClick={(e) => e.stopPropagation()}  // Prevent click events inside the modal from propagating
+      onClick={onClose}
     >
-      <h3 style={{ margin: 0, marginBottom: '1rem' }}>Full Description</h3>
-      <p style={{ lineHeight: '1.6', fontSize: '16px', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-        {description}
-      </p>
+      <div
+        style={{
+          backgroundColor: '#fff',
+          padding: '2rem',
+          borderRadius: '12px',
+          maxWidth: '600px',
+          maxHeight: '80vh',
+          overflowY: 'auto',
+          boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+          cursor: 'default'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 style={{ marginBottom: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
+          Full Description
+        </h3>
+        
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+          {['US', 'GB', 'DE'].map((locale) => (
+            <button
+              key={locale}
+              onClick={() => setSelectedTab(locale as 'US' | 'GB' | 'DE')}
+              style={{
+                padding: '0.5rem 1rem',
+                border: 'none',
+                borderBottom: selectedTab === locale ? '3px solid #007ACC' : 'none',
+                background: 'transparent',
+                fontSize: '16px',
+                cursor: 'pointer',
+                color: selectedTab === locale ? '#007ACC' : '#555',
+                marginRight: '1rem'
+              }}
+            >
+              {locale}
+            </button>
+          ))}
+        </div>
+
+        <p style={{
+          lineHeight: '1.6',
+          fontSize: '16px',
+          whiteSpace: 'pre-wrap',
+          wordWrap: 'break-word',
+          padding: '1rem',
+          background: '#f9f9f9',
+          borderRadius: '8px',
+          border: '1px solid #ddd'
+        }}>
+          {getDescription(selectedTab)}
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
+};

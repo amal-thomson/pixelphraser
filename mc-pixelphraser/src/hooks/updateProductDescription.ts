@@ -1,7 +1,7 @@
 import { actions } from '@commercetools-frontend/sdk';
 import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
 
-export const updateProductDescription = async (dispatch: any, productId: string, description: string) => {
+export const updateProductDescription = async (dispatch: any, productId: string, usDescription: string, gbDescription: string, deDescription: string) => {
     try {
       const product = await dispatch(
         actions.get({
@@ -25,7 +25,11 @@ export const updateProductDescription = async (dispatch: any, productId: string,
             actions: [
               {
                 action: 'setDescription',
-                description: { en: description },
+                description: { 
+                  "en-us": usDescription,
+                  "en-gb": gbDescription,
+                  "de-de": deDescription 
+                },
               },
             ],
           },
