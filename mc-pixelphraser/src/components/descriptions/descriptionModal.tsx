@@ -3,13 +3,10 @@ import { DescriptionModalProps } from '../../interfaces/descriptionModalProps';
 
 export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description, onClose }) => {
   const [selectedTab, setSelectedTab] = useState<'US' | 'GB' | 'DE'>('US');
-
-  const getDescription = (locale: string) => {
-    const match = description.match(new RegExp(`${locale}: (.*?)(\\n|$)`, 's'));
-    return match ? match[1].trim() : 'No description available';
-  };
   
-
+  // Parse the description object from JSON string
+  const descriptionObj = JSON.parse(description);
+  
   return (
     <div
       style={{
@@ -32,7 +29,8 @@ export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description,
           backgroundColor: '#fff',
           padding: '2rem',
           borderRadius: '12px',
-          maxWidth: '600px',
+          width: '80%',
+          maxWidth: '800px',
           maxHeight: '80vh',
           overflowY: 'auto',
           boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
@@ -42,8 +40,7 @@ export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description,
       >
         <h3 style={{ marginBottom: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
           Full Description
-        </h3>
-        
+        </h3>   
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
           {['US', 'GB', 'DE'].map((locale) => (
             <button
@@ -64,8 +61,7 @@ export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description,
             </button>
           ))}
         </div>
-
-        <p style={{
+        <div style={{
           lineHeight: '1.6',
           fontSize: '16px',
           whiteSpace: 'pre-wrap',
@@ -73,10 +69,12 @@ export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description,
           padding: '1rem',
           background: '#f9f9f9',
           borderRadius: '8px',
-          border: '1px solid #ddd'
+          border: '1px solid #ddd',
+          maxHeight: '60vh',
+          overflowY: 'auto'
         }}>
-          {getDescription(selectedTab)}
-        </p>
+          {descriptionObj[selectedTab]}
+        </div>
       </div>
     </div>
   );

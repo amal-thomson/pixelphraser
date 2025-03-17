@@ -1,7 +1,17 @@
 import { createApiRoot } from '../../client/create.client';
 import { logger } from '../../utils/logger.utils';
 
-export async function updateCustomObjectWithDescription(productId: string, productName: string, imageUrl: string, description: string) {
+export async function updateCustomObjectWithDescription(
+    productId: string,
+    productName: string,
+    imageUrl: string,
+    translations: {
+        "en-US": string;
+        "en-GB": string;
+        "de-DE": string;
+    },
+    productType: string
+) {
     try {
         const apiRoot = createApiRoot();
 
@@ -20,7 +30,7 @@ export async function updateCustomObjectWithDescription(productId: string, produ
 
         const currentVersion = currentCustomObject.version;
 
-        logger.info(`✅ Updating custom object for product ID: ${productId} with generated description, imageUrl, and productName.`);
+        logger.info(`✅ Updating custom object for product ID: ${productId} with generated translations, imageUrl, and productName.`);
         
         const updateResponse = await apiRoot.customObjects().post({
             body: {
@@ -28,8 +38,11 @@ export async function updateCustomObjectWithDescription(productId: string, produ
                 key: productId,
                 version: currentVersion, 
                 value: {
-                    temporaryDescription: description,
+                    usDescription: translations["en-US"],
+                    gbDescription: translations["en-GB"],
+                    deDescription: translations["de-DE"],
                     imageUrl: imageUrl,
+                    productType: productType,
                     productName: productName,
                     generatedAt: new Date().toISOString()
                 }

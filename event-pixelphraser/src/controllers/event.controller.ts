@@ -5,6 +5,8 @@ import { generateProductDescription } from '../services/generative-ai/descriptio
 import { ProductAttribute } from '../interfaces/productAttribute.interface';
 import { createProductCustomObject } from '../repository/custom-object/createCustomObject.repository';
 import { updateCustomObjectWithDescription } from '../repository/custom-object/updateCustomObjectWithDescription';
+import { fetchProductType } from '../repository/product-type/fetchProductType';
+import { translateProductDescription } from '../services/generative-ai/translateProductDescription';
 
 export const post = async (request: Request, response: Response) => {
     try {
@@ -26,10 +28,11 @@ export const post = async (request: Request, response: Response) => {
         }
 
         const productId = jsonData.productProjection?.id;
+        const productType = jsonData.productProjection?.productType?.id;
         const imageUrl = jsonData.productProjection?.masterVariant?.images?.[0]?.url;
         const productName = jsonData.productProjection?.name?.en || 'Product Name Missing'; 
 
-        if (productId && imageUrl) {
+        if (productId && imageUrl && productName) {
             const attributes: ProductAttribute[] = jsonData.productProjection?.masterVariant?.attributes || [];
             
             if (!attributes || attributes.length === 0) {
@@ -40,8 +43,17 @@ export const post = async (request: Request, response: Response) => {
             }
             
             const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
-            const isGenerateDescriptionEnabled = Boolean(genDescriptionAttr?.value);
+            if (!genDescriptionAttr) {
+                logger.error('❌ The attribute "generateDescription" is missing.', { productId, imageUrl });
+                return response.status(400).send({
+                    error: '❌ The attribute "generateDescription" is missing.',
+                    productId,
+                    imageUrl,
+                    productName
+                });
+            }
 
+            const isGenerateDescriptionEnabled = Boolean(genDescriptionAttr?.value);
             if (!isGenerateDescriptionEnabled) {
                 logger.info('❌ The option for automatic description generation is not enabled.', { productId, imageUrl });
                 return response.status(200).send({
@@ -52,19 +64,35 @@ export const post = async (request: Request, response: Response) => {
                 });
             }
 
-            logger.info(`✅ Processing product: ${productName} (ID: ${productId})`);
+            logger.info(`✅ Processing product: ${productName} (ID: ${productId}) (ProductType: ${productType})`);
+
+            const productTypeKey = await fetchProductType(productType);
+            if (!productTypeKey) {
+                logger.error('❌ Failed to fetch product type key.');
+                return response.status(500).send({
+                    error: '❌ Product type key is missing.',
+                });
+            }
 
             logger.info('✅ Sending product image to Vision AI.');
             const imageData = await productAnalysis(imageUrl);
 
-            logger.info('✅ Sending image data to Generative AI.');
-            const description = await generateProductDescription(imageData);
+            logger.info('✅ Sending image data to Generative AI for generating descriptions.');
+            const generatedDescription = await generateProductDescription(imageData, productName, productTypeKey);
+
+            logger.info('✅ Sending generatedDescription to Generative AI for translation.');
+            const translations = await translateProductDescription(generatedDescription);
 
             logger.info('✅ Creating custom object for product description.');
-            await createProductCustomObject(productId, imageUrl, productName);
+            await createProductCustomObject(productId, imageUrl, productName, productTypeKey);
 
             logger.info('✅ Updating custom object with generated description.');
-            await updateCustomObjectWithDescription(productId, productName, imageUrl, description);
+            const translationsTyped: { "en-US": string; "en-GB": string; "de-DE": string } = translations as {
+                "en-US": string;
+                "en-GB": string;
+                "de-DE": string;
+            };
+            await updateCustomObjectWithDescription(productId, productName, imageUrl, translationsTyped, productTypeKey);
 
             logger.info('✅ Process completed successfully.');
             logger.info('⌛ Waiting for next event message.');
@@ -73,7 +101,8 @@ export const post = async (request: Request, response: Response) => {
                 productId,
                 productName,
                 imageUrl,
-                description,
+                productType,
+                translations,
                 productAnalysis: imageData,
             });
         }

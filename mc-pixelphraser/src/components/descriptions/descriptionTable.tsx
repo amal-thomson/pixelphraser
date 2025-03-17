@@ -71,7 +71,13 @@ export const DescriptionsTable = ({
     { key: 'generatedAt', label: 'Generated At', flexGrow: 1 },
     { key: 'actions', label: 'Actions', flexGrow: 1 }
   ];
-  
+
+  const getShortDescription = (text: string | null | undefined): string => {
+    if (!text) return 'N/A';
+    const firstLine = text.split('\n')[0];
+    return firstLine.length > 50 ? `${firstLine.substring(0, 50)}...` : firstLine;
+  };
+
   const itemRenderer = (item: any, column: any) => {
     switch (column.key) {
       case 'imageUrl':
@@ -94,22 +100,29 @@ export const DescriptionsTable = ({
       case 'descriptions':
         return (
           <div
-            onClick={() => setExpandedDesc(
-              `US: ${item.usDescription || 'N/A'}\nGB: ${item.gbDescription || 'N/A'}\nDE: ${item.deDescription || 'N/A'}`
-            )}
+            onClick={() => {
+              const desc = {
+                US: item.usDescription || 'N/A',
+                GB: item.gbDescription || 'N/A',
+                DE: item.deDescription || 'N/A'
+              };
+              setExpandedDesc(JSON.stringify(desc));
+            }}
             style={{
-              maxHeight: '4rem',
-              overflowY: 'auto',
               padding: '0.5rem',
               borderRadius: '4px',
               cursor: 'pointer',
-              whiteSpace: 'pre-wrap'
+              border: '1px dashed #ccc',
+              background: '#f8f8f8'
             }}
           >
             <Text.Body>
-              <strong>US:</strong> {item.usDescription || 'N/A'} <br />
-              <strong>GB:</strong> {item.gbDescription || 'N/A'} <br />
-              <strong>DE:</strong> {item.deDescription || 'N/A'}
+              <strong>US:</strong> {getShortDescription(item.usDescription)} <br />
+              <strong>GB:</strong> {getShortDescription(item.gbDescription)} <br />
+              <strong>DE:</strong> {getShortDescription(item.deDescription)}
+              <div style={{ marginTop: '0.5rem', color: '#0066cc', fontSize: '0.8rem' }}>
+                Click to view full descriptions
+              </div>
             </Text.Body>
           </div>
         );
@@ -134,7 +147,7 @@ export const DescriptionsTable = ({
         return item[column.key];
     }
   };
-  
+
   return (
     <>
       <DataTable
@@ -160,5 +173,4 @@ export const DescriptionsTable = ({
       )}
     </>
   );
-  
 };
