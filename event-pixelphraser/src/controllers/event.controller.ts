@@ -9,6 +9,7 @@ import { fetchProductType } from '../repository/product-type/fetchProductType';
 import { translateProductDescription } from '../services/generative-ai/translateProductDescription';
 
 export const post = async (request: Request, response: Response) => {
+    logger.info('🔔 Event message received from PUB/SU.');
     try {
         const pubSubMessage = request.body.message;
         const decodedData = pubSubMessage.data
@@ -17,11 +18,13 @@ export const post = async (request: Request, response: Response) => {
         
         if (!decodedData) {
             logger.error('❌ No data found in Pub/Sub message.');
-            return response.status(400).send();
-        } else {
-            response.status(200).send();
+            response.status(400).send();
+            return; 
         }
-
+        
+        response.status(200).send();
+        logger.info('✅ ACK send to PUB/SUB.');
+        
         const jsonData = JSON.parse(decodedData);
 
         if (jsonData.resource?.typeId === 'product') {
