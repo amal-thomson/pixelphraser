@@ -14,10 +14,12 @@ export const post = async (request: Request, response: Response) => {
         const decodedData = pubSubMessage.data
             ? Buffer.from(pubSubMessage.data, 'base64').toString().trim()
             : undefined;
-
+        
         if (!decodedData) {
             logger.error('❌ No data found in Pub/Sub message.');
-            return response.status(400).send({ error: '❌ No data found in Pub/Sub message.' });
+            return response.status(400).send();
+        } else {
+            response.status(200).send();
         }
 
         const jsonData = JSON.parse(decodedData);
@@ -37,31 +39,19 @@ export const post = async (request: Request, response: Response) => {
             
             if (!attributes || attributes.length === 0) {
                 logger.error('❌ No attributes found in the product data.');
-                return response.status(400).send({
-                    error: '❌ No attributes found in the product data.',
-                });
+                return response.status(400).send();
             }
             
             const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
             if (!genDescriptionAttr) {
                 logger.error('❌ The attribute "generateDescription" is missing.', { productId, imageUrl });
-                return response.status(400).send({
-                    error: '❌ The attribute "generateDescription" is missing.',
-                    productId,
-                    imageUrl,
-                    productName
-                });
+                return response.status(400).send();
             }
 
             const isGenerateDescriptionEnabled = Boolean(genDescriptionAttr?.value);
             if (!isGenerateDescriptionEnabled) {
                 logger.info('❌ The option for automatic description generation is not enabled.', { productId, imageUrl });
-                return response.status(200).send({
-                    message: '❌ The option for automatic description generation is not enabled.',
-                    productId,
-                    imageUrl,
-                    productName
-                });
+                return response.status(200).send();
             }
 
             logger.info(`✅ Processing product: ${productName} (ID: ${productId}) (ProductType: ${productType})`);
@@ -69,9 +59,7 @@ export const post = async (request: Request, response: Response) => {
             const productTypeKey = await fetchProductType(productType);
             if (!productTypeKey) {
                 logger.error('❌ Failed to fetch product type key.');
-                return response.status(500).send({
-                    error: '❌ Product type key is missing.',
-                });
+                return response.status(500).send();
             }
 
             logger.info('✅ Sending product image to Vision AI.');
@@ -97,27 +85,15 @@ export const post = async (request: Request, response: Response) => {
             logger.info('✅ Process completed successfully.');
             logger.info('⌛ Waiting for next event message.');
 
-            return response.status(200).send({
-                productId,
-                productName,
-                imageUrl,
-                productType,
-                translations,
-                productAnalysis: imageData,
-            });
+            return response.status(200).send();
         }
         
     } catch (error) {
         if (error instanceof Error) {
             logger.error('❌ Error processing request', { error: error.message });
-            return response.status(500).send({
-                error: '❌ Internal server error. Failed to process request.',
-                details: error.message,
-            });
+            return response.status(500).send();
         }
         logger.error('❌ Unexpected error', { error });
-        return response.status(500).send({
-            error: '❌ Unexpected error occurred.',
-        });
+        return response.status(500).send();
     }
 };
