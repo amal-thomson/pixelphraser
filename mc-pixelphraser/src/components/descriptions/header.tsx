@@ -14,7 +14,7 @@ export const Header = ({ onRefresh, isLoading }: HeaderProps) => (
       }}
     />
     <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Text.Headline as="h1">Temporary Product Descriptions</Text.Headline>
+      <Text.Headline as="h1">AI Generated Product Descriptions</Text.Headline>
       <PrimaryButton
         label="Refresh"
         onClick={onRefresh}
