@@ -22,8 +22,9 @@ export const post = async (request: Request, response: Response) => {
             return; 
         }
         
-        response.status(200).send();
-        logger.info('✅ ACK send to PUB/SUB.');
+        // response.status(200).send();
+        // logger.info('✅ ACK send to PUB/SUB.');
+        logger.info('✅ Starting Process.');
         
         const jsonData = JSON.parse(decodedData);
 
