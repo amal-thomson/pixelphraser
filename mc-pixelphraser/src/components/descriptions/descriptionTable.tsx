@@ -74,9 +74,11 @@ export const DescriptionsTable = ({
 
   const getShortDescription = (text: string | null | undefined): string => {
     if (!text) return 'N/A';
-    const firstLine = text.split('\n')[0];
+    const cleanText = text.replace(/[*_~`]/g, ''); // Remove Markdown formatting
+    const firstLine = cleanText.split('\n')[0];
     return firstLine.length > 50 ? `${firstLine.substring(0, 50)}...` : firstLine;
   };
+  
 
   const itemRenderer = (item: any, column: any) => {
     switch (column.key) {

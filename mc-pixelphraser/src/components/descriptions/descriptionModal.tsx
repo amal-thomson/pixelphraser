@@ -73,7 +73,7 @@ export const DescriptionModal: React.FC<DescriptionModalProps> = ({ description,
           maxHeight: '60vh',
           overflowY: 'auto'
         }}>
-          {descriptionObj[selectedTab]}
+          {descriptionObj[selectedTab].replace(/[*_~`]/g, '')}
         </div>
       </div>
     </div>
