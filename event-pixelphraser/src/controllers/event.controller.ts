@@ -9,23 +9,18 @@ import { fetchProductType } from '../repository/product-type/fetchProductType';
 import { translateProductDescription } from '../services/generative-ai/translateProductDescription';
 
 export const post = async (request: Request, response: Response) => {
-    logger.info('🔔 Event message received from PUB/SU.');
+    
     try {
         const pubSubMessage = request.body.message;
         const decodedData = pubSubMessage.data
             ? Buffer.from(pubSubMessage.data, 'base64').toString().trim()
             : undefined;
-        
+
         if (!decodedData) {
             logger.error('❌ No data found in Pub/Sub message.');
-            response.status(400).send();
-            return; 
+            return response.status(400).send();
         }
-        
-        // response.status(200).send();
-        // logger.info('✅ ACK send to PUB/SUB.');
-        logger.info('✅ Starting Process.');
-        
+
         const jsonData = JSON.parse(decodedData);
 
         if (jsonData.resource?.typeId === 'product') {
@@ -66,6 +61,12 @@ export const post = async (request: Request, response: Response) => {
                 return response.status(500).send();
             }
 
+            logger.info('✅ Sending ACK to Pub/Sub.');
+            response.status(200).send();
+            logger.info('✅ Successfully sent ACK to Pub/Sub.');
+
+            logger.info('✅ Starting AI description generation process.');
+
             logger.info('✅ Sending product image to Vision AI.');
             const imageData = await productAnalysis(imageUrl);
 
@@ -95,9 +96,14 @@ export const post = async (request: Request, response: Response) => {
     } catch (error) {
         if (error instanceof Error) {
             logger.error('❌ Error processing request', { error: error.message });
-            return response.status(500).send();
+            return response.status(500).send({
+                error: '❌ Internal server error. Failed to process request.',
+                details: error.message,
+            });
         }
         logger.error('❌ Unexpected error', { error });
-        return response.status(500).send();
+        return response.status(500).send({
+            error: '❌ Unexpected error occurred.',
+        });
     }
 };
