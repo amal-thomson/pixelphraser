@@ -9,6 +9,6 @@ export interface TemporaryDescription {
     imageUrl: string;
     productType: string;
     productName: string;
-    generatedAt: string;
+    // generatedAt: string;
   };
 }

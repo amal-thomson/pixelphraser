@@ -68,7 +68,7 @@ export const DescriptionsTable = ({
     { key: 'imageUrl', label: 'Image', flexGrow: 1 },
     { key: 'productName', label: 'Product Name', flexGrow: 2 },
     { key: 'descriptions', label: 'Descriptions', flexGrow: 3 },
-    { key: 'generatedAt', label: 'Generated At', flexGrow: 1 },
+    // { key: 'generatedAt', label: 'Generated At', flexGrow: 1 },
     { key: 'actions', label: 'Actions', flexGrow: 1 }
   ];
 
@@ -160,7 +160,7 @@ export const DescriptionsTable = ({
           usDescription: desc.value.usDescription,
           gbDescription: desc.value.gbDescription,
           deDescription: desc.value.deDescription,
-          generatedAt: desc.value.generatedAt,
+          // generatedAt: desc.value.generatedAt,
           actions: 'actions',
           id: desc.id
         }))} 

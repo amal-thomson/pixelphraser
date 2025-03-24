@@ -19,9 +19,6 @@ export const NoDescriptionsFound: React.FC = () => (
         marginBottom: '1.5rem'
       }}
     />
-    <Text.Headline as="h3">OOPS! DESCRIPTION NOT FOUND!!!</Text.Headline>
-    <Text.Body tone="secondary">
-      Descriptions will be available once new products are added. Please check back shortly for the latest updates.
-    </Text.Body>
+    <Text.Headline as="h3">Descriptions will be available once new products are added. Please check back shortly for the latest updates.</Text.Headline>
   </div>
 );
