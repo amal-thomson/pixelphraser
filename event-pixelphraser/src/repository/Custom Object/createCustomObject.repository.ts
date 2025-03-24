@@ -1,7 +1,7 @@
 import { createApiRoot } from '../../client/create.client';
 import { logger } from '../../utils/logger.utils';
 
-export async function createProductCustomObject(productId: string, imageUrl: string, productName: string, productType: string) {
+export async function createProductCustomObject(productId: string, imageUrl: string, productName: string) {
     try {
         const apiRoot = createApiRoot();
 
@@ -12,11 +12,8 @@ export async function createProductCustomObject(productId: string, imageUrl: str
                 container: "temporaryDescription",
                 key: productId,
                 value: {
-                    usDescription: null,
-                    gbDescription: null,
-                    deDescription: null,
+                    temporaryDescription: null,
                     imageUrl: imageUrl,
-                    productType,
                     productName: productName
                 }
             }
