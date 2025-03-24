@@ -30,7 +30,7 @@ async function createSubscription(
         messages: [
           {
             resourceTypeId: 'product',
-            types: ['ProductCreated'],
+            types: ['ProductVariantAdded'],
           },
         ],
       },

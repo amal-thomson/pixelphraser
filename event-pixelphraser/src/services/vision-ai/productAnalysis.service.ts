@@ -4,6 +4,8 @@ import { visionClient } from '../../config/ai.config';
 
 export async function productAnalysis(imageURL: string): Promise<ImageData> {
     try {
+        logger.info('⌛Sending product image to Vision AI.');
+
         const request = {
             image: { source: { imageUri: imageURL } },
             features: [
@@ -17,7 +19,7 @@ export async function productAnalysis(imageURL: string): Promise<ImageData> {
         };
 
         const [result] = await visionClient.annotateImage(request);
-        if (!result) throw new Error('❌ Vision AI analysis failed.');
+        if (!result) throw new Error('🚫Vision AI analysis failed.');
 
         const imageData = {
             labels: result.labelAnnotations?.map((label: any) => label.description).join(', ') || 'No labels detected',
@@ -30,11 +32,11 @@ export async function productAnalysis(imageURL: string): Promise<ImageData> {
             webEntities: result.webDetection?.webEntities?.slice(0, 5).map((entity: any) => entity.description).join(', ') || 'No web entities detected'
         };
 
-        logger.info('✅ Vision AI analysis completed successfully.');
+        logger.info('✅Vision AI analysis completed successfully.');
         return imageData;
         
     } catch (error: any) {
-        logger.error('❌ Error during Vision AI analysis:', { message: error.message, stack: error.stack });
+        logger.error('🚫Error during Vision AI analysis:', { message: error.message, stack: error.stack });
         throw error;
     }
 }
