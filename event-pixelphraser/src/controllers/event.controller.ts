@@ -18,13 +18,9 @@ export const post = async (request: Request, response: Response) => {
         
         if (!decodedData) {
             logger.error('❌ No data found in Pub/Sub message.');
-            response.status(400).send();
+            response.status(200).send();
             return; 
         }
-        
-        // response.status(200).send();
-        // logger.info('✅ ACK send to PUB/SUB.');
-        logger.info('✅ Starting Process.');
         
         const jsonData = JSON.parse(decodedData);
 
@@ -60,6 +56,9 @@ export const post = async (request: Request, response: Response) => {
 
             logger.info(`✅ Processing product: ${productName} (ID: ${productId}) (ProductType: ${productType})`);
 
+            logger.info('✅Sending ACK to Pub/Sub.'); 
+            response.status(200).send();
+
             const productTypeKey = await fetchProductType(productType);
             if (!productTypeKey) {
                 logger.error('❌ Failed to fetch product type key.');
@@ -86,18 +85,18 @@ export const post = async (request: Request, response: Response) => {
             };
             await updateCustomObjectWithDescription(productId, productName, imageUrl, translationsTyped, productTypeKey);
 
-            logger.info('✅ Process completed successfully.');
-            logger.info('⌛ Waiting for next event message.');
+            logger.info('✅Process completed successfully.');
+            logger.info('⌛Waiting for next event message.');
 
-            return response.status(200).send();
+            return;
         }
         
     } catch (error) {
         if (error instanceof Error) {
-            logger.error('❌ Error processing request', { error: error.message });
-            return response.status(500).send();
+            logger.error('❌Error processing request', { error: error.message });
+            return;
         }
-        logger.error('❌ Unexpected error', { error });
-        return response.status(500).send();
+        logger.error('❌Unexpected error', { error });
+        return;
     }
 };
