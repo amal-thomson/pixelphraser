@@ -4,8 +4,6 @@ import { logger } from '../../utils/logger.utils';
 export async function createProductCustomObject(productId: string, imageUrl: string, productName: string, productType: string) {
     try {
         const apiRoot = createApiRoot();
-
-        logger.info(`✅ Creating custom object for product ID: ${productId}`);
         
         const customObject = await apiRoot.customObjects().post({
             body: {
@@ -22,7 +20,6 @@ export async function createProductCustomObject(productId: string, imageUrl: str
             }
         }).execute();
 
-        logger.info(`✅ Custom object created successfully for product ID: ${productId}.`);
         return customObject;
 
     } catch (error: any) {

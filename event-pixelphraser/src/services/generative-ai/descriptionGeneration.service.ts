@@ -148,7 +148,7 @@ export async function generateProductDescription(imageData: ImageData, productNa
         if (!result?.response) throw new Error('❌ Generative AI response is null or undefined.');
 
         const generatedDescription = result.response.text();
-        logger.info('✅ Generative AI description generated successfully.');
+    
         return generatedDescription;
     } catch (error: any) {
         logger.error('❌ Error during description generation:', { message: error.message, stack: error.stack });

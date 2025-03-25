@@ -14,6 +14,7 @@ export const post = async (request: Request, response: Response) => {
         const pubSubMessage = request.body.message;
         logger.info('✅Message Received:', pubSubMessage);
 
+        // Check if the message is empty
         const decodedData = pubSubMessage.data
             ? Buffer.from(pubSubMessage.data, 'base64').toString().trim()
             : undefined;
@@ -26,6 +27,13 @@ export const post = async (request: Request, response: Response) => {
         const messageData = JSON.parse(decodedData);
         logger.info('✅Decoded Data:', messageData);
 
+        // Check if the notification type is ResourceCreated
+        if (messageData.notificationType === 'ResourceCreated') {
+            logger.info('✅Resource created notification received. Skipping the message.');
+            return response.status(200).send();
+        }
+
+        // Check if the message type is ProductVariantAdded
         const eventType = messageData?.type;
         if (eventType === 'ProductVariantAdded') {
             logger.info(`✅Event message received, Event Type: ${eventType}`);
@@ -38,7 +46,7 @@ export const post = async (request: Request, response: Response) => {
         // Extract product ID and image URL from message data
         const productId = messageData.resource.id;
         const imageUrl = messageData?.variant?.images?.[0]?.url;
-        const productName = messageData?.variant?.images?.[0]?.label;
+        // const productName = messageData?.variant?.images?.[0]?.label;
 
         if (!imageUrl) {
             logger.error('🚫Image URL is missing or null.', { productId });
@@ -49,7 +57,9 @@ export const post = async (request: Request, response: Response) => {
         // Fetch product data
         const productData = await fetchProduct(productId);
         // logger.info('Product Data:', productData);
+        
         // Extract product type, name and id from product data
+        const productName = productData.masterData.current.name["en-US"];
         const productType = productData.productType.id;
         
         logger.info(`Product Name: ${productName}, Product Type: ${productType}`);
@@ -87,11 +97,14 @@ export const post = async (request: Request, response: Response) => {
             logger.info('✅Successfully sent ACK to Pub/Sub.');
 
             // Process image data
+            logger.info('⌛Sending product image to Vision AI.');
             const imageData = await productAnalysis(imageUrl);
+            logger.info('✅Vision AI analysis completed successfully.');
 
             // Generate product description
             logger.info('⌛Sending image data to Generative AI for generating descriptions.');
             const generatedDescription = await generateProductDescription(imageData, productName, productTypeKey);
+            logger.info('✅ Generative AI description generated successfully.');
             
             // Translate generated description
             logger.info('⌛Sending generatedDescription to Generative AI for translation.');
@@ -100,6 +113,7 @@ export const post = async (request: Request, response: Response) => {
             // Create custom object for product description
             logger.info('⌛Creating custom object for product description.');
             await createProductCustomObject(productId, imageUrl, productName, productTypeKey);
+            logger.info(`✅ Custom object created successfully for product ID: ${productId}.`);
             
             // Update custom object with generated description
             logger.info('⌛Updating custom object with generated description.');
@@ -108,10 +122,11 @@ export const post = async (request: Request, response: Response) => {
                 "en-GB": string;
                 "de-DE": string;
             };
-            
+
+            logger.info(`✅Fetching custom object for product ID: ${productId} to get current version.`);
             await updateCustomObjectWithDescription(productId, productName, imageUrl, translationsTyped, productTypeKey);
-            logger.info('⌛Waiting for next event message.');
-            
+            logger.info(`✅Custom object updated successfully for product ID: ${productId}.`);
+                        
             return;
         }
 

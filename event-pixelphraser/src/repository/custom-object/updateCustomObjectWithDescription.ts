@@ -14,8 +14,6 @@ export async function updateCustomObjectWithDescription(
 ) {
     try {
         const apiRoot = createApiRoot();
-
-        logger.info(`✅ Fetching custom object for product ID: ${productId} to get current version.`);
         
         const customObjectResponse = await apiRoot.customObjects().withContainerAndKey({
             container: "temporaryDescription",
@@ -29,8 +27,6 @@ export async function updateCustomObjectWithDescription(
         }
 
         const currentVersion = currentCustomObject.version;
-
-        logger.info(`✅ Updating custom object for product ID: ${productId} with generated translations, imageUrl, and productName.`);
         
         const updateResponse = await apiRoot.customObjects().post({
             body: {
@@ -49,7 +45,6 @@ export async function updateCustomObjectWithDescription(
             }
         }).execute();
 
-        logger.info(`✅ Custom object updated successfully for product ID: ${productId}.`);
         return updateResponse;
 
     } catch (error: any) {

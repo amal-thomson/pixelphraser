@@ -4,8 +4,6 @@ import { visionClient } from '../../config/ai.config';
 
 export async function productAnalysis(imageURL: string): Promise<ImageData> {
     try {
-        logger.info('⌛Sending product image to Vision AI.');
-
         const request = {
             image: { source: { imageUri: imageURL } },
             features: [
@@ -32,7 +30,6 @@ export async function productAnalysis(imageURL: string): Promise<ImageData> {
             webEntities: result.webDetection?.webEntities?.slice(0, 5).map((entity: any) => entity.description).join(', ') || 'No web entities detected'
         };
 
-        logger.info('✅Vision AI analysis completed successfully.');
         return imageData;
         
     } catch (error: any) {
