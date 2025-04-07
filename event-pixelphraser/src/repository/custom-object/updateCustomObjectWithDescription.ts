@@ -5,18 +5,15 @@ export async function updateCustomObjectWithDescription(
     productId: string,
     productName: string,
     imageUrl: string,
-    translations: {
-        "en-US": string;
-        "en-GB": string;
-        "de-DE": string;
-    },
-    productType: string
-) {
+    translations: Record<string, string>,
+    productType: string,
+    messageId: string
+) : Promise<void> {
     try {
-        const apiRoot = createApiRoot();
-
-        logger.info(`✅ Fetching custom object for product ID: ${productId} to get current version.`);
+        logger.info(`Message ID: ${messageId} - updating custom object with ID: ${productId}.`);
         
+        const apiRoot = createApiRoot();        
+
         const customObjectResponse = await apiRoot.customObjects().withContainerAndKey({
             container: "temporaryDescription",
             key: productId
@@ -25,35 +22,35 @@ export async function updateCustomObjectWithDescription(
         const currentCustomObject = customObjectResponse?.body;
 
         if (!currentCustomObject) {
-            throw new Error(`❌ Custom object not found for product ID: ${productId}`);
+            throw new Error(`Message ID: ${messageId} - custom object not found with ID: ${productId}`);
         }
 
         const currentVersion = currentCustomObject.version;
-
-        logger.info(`✅ Updating custom object for product ID: ${productId} with generated translations, imageUrl, and productName.`);
         
-        const updateResponse = await apiRoot.customObjects().post({
+        const updatedValue = {
+            ...translations,
+            imageUrl,
+            productType,
+            productName,
+            generatedAt: new Date().toISOString()
+        };
+
+        await apiRoot.customObjects().post({
             body: {
                 container: "temporaryDescription",
                 key: productId,
                 version: currentVersion, 
-                value: {
-                    usDescription: translations["en-US"],
-                    gbDescription: translations["en-GB"],
-                    deDescription: translations["de-DE"],
-                    imageUrl: imageUrl,
-                    productType: productType,
-                    productName: productName,
-                    generatedAt: new Date().toISOString()
-                }
+                value: updatedValue
             }
         }).execute();
 
-        logger.info(`✅ Custom object updated successfully for product ID: ${productId}.`);
-        return updateResponse;
+        logger.info(`Message ID: ${messageId} - custom object updated with ID: ${productId}.`);
+        return;
 
     } catch (error: any) {
-        logger.error(`❌ Failed to update custom object for product ID: ${productId}`, { message: error.message });
+        logger.error(`Message ID: ${messageId} - failed to update custom object with ID: ${productId}`, { 
+            message: error.message 
+        });
         throw error;
     }
 }

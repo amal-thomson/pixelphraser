@@ -1,32 +1,43 @@
 import { createApiRoot } from '../../client/create.client';
 import { logger } from '../../utils/logger.utils';
 
-export async function createProductCustomObject(productId: string, imageUrl: string, productName: string, productType: string) {
+export async function createProductCustomObject(
+    productId: string, 
+    imageUrl: string, 
+    productName: string, 
+    productType: string, 
+    languagesForTranslation: string[],
+    messageId: string
+) : Promise<void> {
     try {
         const apiRoot = createApiRoot();
 
-        logger.info(`✅ Creating custom object for product ID: ${productId}`);
-        
-        const customObject = await apiRoot.customObjects().post({
+        logger.info(`Message ID: ${messageId} - creating custom object with ID: ${productId}`);
+
+        const descriptions = languagesForTranslation.reduce((acc, lang) => {
+            acc[lang] = null; 
+            return acc;
+        }, {} as Record<string, string | null>);
+
+        await apiRoot.customObjects().post({
             body: {
                 container: "temporaryDescription",
                 key: productId,
                 value: {
-                    usDescription: null,
-                    gbDescription: null,
-                    deDescription: null,
-                    imageUrl: imageUrl,
+                    ...descriptions,
+                    imageUrl,
                     productType,
-                    productName: productName
+                    productName
                 }
             }
         }).execute();
 
-        logger.info(`✅ Custom object created successfully for product ID: ${productId}.`);
-        return customObject;
+        logger.info(`Message ID: ${messageId} - custom object created with ID: ${productId}.`);
 
     } catch (error: any) {
-        logger.error(`❌ Failed to create custom object for product ID: ${productId}`, { message: error.message });
+        logger.error(`Message ID: ${messageId} - failed to create custom object with ID: ${productId}`, { 
+            message: error.message 
+        });
         throw error;
     }
 }

@@ -15,11 +15,16 @@ export async function createGcpPubSubProductSubscription(
   };
   await createSubscription(apiRoot, destination);
 }
-
 async function createSubscription(
   apiRoot: ByProjectKeyRequestBuilder,
   destination: Destination
 ) {
+  const eventTrigger: string[] = process.env.CTP_EVENT_TRIGGER_NAME
+    ? process.env.CTP_EVENT_TRIGGER_NAME.split(',')
+        .map((type) => type.trim())
+        .filter((type) => type)
+    : ['ProductCreated'];
+
   await deleteProductSubscription(apiRoot);
   await apiRoot
     .subscriptions()
@@ -30,7 +35,7 @@ async function createSubscription(
         messages: [
           {
             resourceTypeId: 'product',
-            types: ['ProductCreated'],
+            types: eventTrigger,
           },
         ],
       },
